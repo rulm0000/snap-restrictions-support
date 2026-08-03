@@ -1,7 +1,10 @@
-# Local data / outputs — do not commit survey microdata
-output/*.dta
-output/**/*.dta
+# Analysis microdata / intermediates — do not commit
 *.dta
+output/derived/
+output/logs/
+
+# Zoom variants (local only)
+output/figures/*_zoom.*
 
 # OS / editor
 .DS_Store
@@ -11,3 +14,4 @@ Thumbs.db
 
 # Stata scratch
 *.smcl
+*.log

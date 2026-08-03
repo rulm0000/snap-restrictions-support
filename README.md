@@ -1,32 +1,48 @@
 # SNAP_support
 
-Psychological factors associated with support for SNAP soft-drink/candy restrictions (Wave 2 Numerator survey).
+Psychological factors associated with support for SNAP restrictions (AsPredicted v10).
 
-Pre-registration: AsPredicted (v10) — *Psychological Factors Associated with Support for SNAP Restrictions*.
+## Purpose
 
-## Run order (Stata)
+Determine whether psychological predictors (self-reported soda overconsumption, perceived health risk of soda, perceived stigma of current SNAP policies, and embarrassment when paying with SNAP benefits) predict support for removing soft drinks and candy from SNAP-eligible food purchases, and whether these associations are moderated by SNAP participation.
 
-1. Edit local paths at the top of `01_prepare_data.do` / `02_main_analysis.do` if needed.
-2. `do 01_prepare_data.do` — builds `output/snap_w2_analysis.dta` (not in git).
-3. `do 02_main_analysis.do` — model, Wald tests, simple effects, figures in `output/figures/`.
+## Analyses
 
-## Data (not in this repo)
+- 1_Data_Preparation.do — Import/merge, recode outcome and predictors; perceived stigma = average of the two SNAP-policy stigma items (prereg §5); complete-case analysis sample.
+- 2_Main_Analysis.do — VIF; linear regression with continuous predictors, SNAP, predictor×SNAP interactions, covariates; state-clustered SEs; Wald tests; simple effects; export plot CSVs.
+- 3_Figures.py — Four-panel figures from those CSVs (model-adjusted + descriptive).
+- 4_Tables.do — Table 1 (descriptives by SNAP), Table 2 (main effects), Table 3 (simple slopes by SNAP).
 
-- Wave 2: `University of Chicago Booth_SNAP Benefits Survey Tracker (W2)_RAW DATA_07.29.26_V01.xlsx`
-- Wave 1 (for Q14 only): `Numerator/Numerator_SNAP Restrictions_BL data_raw.csv`
-- State crosswalk: `state_restriction_status.csv` (in repo)
+## Run
 
-## Analysis notes / deviations from prereg
+From this folder:
 
-- **Q14 (soda overconsumption):** empty in Wave 2; merged from Wave 1 (Dec 2025) by `user_id`.
-- **Weights:** none in the delivered files; primary models are **unweighted**. Code can accept a weight variable later.
-- **Predictors:** continuous (overconsume 1–4; risk, embarrass, stigma 1–5). Stigma = mean of Q7 (disrespectful) + Q8 (agency).
-- **SEs:** clustered by state (`vce(cluster state)`).
-- **Exclusions:** complete case; Q4 "Don't Know" excluded; Q5 "did not pay with benefits" → missing embarrassment.
-- **Restriction status:** hand-coded 4-level covariate from Allcott et al. PAP Table 1 (March 2026) + June 22, 2026 *Aragon v. Rollins* vacatur. See notes in `state_restriction_status.csv`.
+`
+do 0_Master.do
+`
 
-## Sample (from last prep run)
+Requires Stata plus Python with pandas and matplotlib. Raw Wave 1/2 survey files live outside the repo (not committed).
 
-- Wave 2 N = 9,014
-- After excluding Don't Know SNAP: 8,765
-- Complete-case analysis N = 8,715
+## Repository layout
+
+`	ext
+SNAP_support/
+|-- 0_Master.do
+|-- setup.do
+|-- 1_Data_Preparation.do
+|-- 2_Main_Analysis.do
+|-- 3_Figures.py
+|-- 4_Tables.do
+|-- state_restriction_status.csv
+|-- README.md
+|-- output/
+    |-- figures/
+    |   |-- fig_predictors_x_snap.png|.pdf
+    |   |-- fig_predictors_x_snap_descriptive.png|.pdf
+    |-- tables/
+    |   |-- Table1_Descriptives.xlsx
+    |   |-- Table2_Main_Effects.xlsx
+    |   |-- Table3_Predictors_by_SNAP.xlsx
+    |-- derived/          # local only; not committed
+    |-- logs/             # local only; not committed
+`
