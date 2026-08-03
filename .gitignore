@@ -1,0 +1,13 @@
+# Local data / outputs — do not commit survey microdata
+output/*.dta
+output/**/*.dta
+*.dta
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+~$*
+
+# Stata scratch
+*.smcl

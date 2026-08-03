@@ -1,0 +1,52 @@
+state_name,restriction_status,restriction_status_num,impl_date_pap,notes
+Alabama,not adopted,4,,
+Alaska,not adopted,4,,
+Arizona,not adopted,4,,
+Arkansas,currently implemented,1,2026-07-01,PAP Table 1; implemented 7/1/2026 during W2 fielding — coded as implemented as of late-July W2 export (07.29.26). Review if fielding-start coding preferred.
+California,not adopted,4,,
+Colorado,adopted not yet implemented or vacated,3,2026-03-01,PAP Table 1 scheduled 3/1/2026 but delayed; vacated 2026-06-22 (Aragon v. Rollins) before implementation.
+Connecticut,not adopted,4,,
+Delaware,not adopted,4,,
+Florida,currently implemented,1,2026-01-01,PAP Table 1
+Georgia,not adopted,4,,
+Hawaii,adopted not yet implemented or vacated,3,2026-08-01,PAP Table 1; not yet effective as of July 2026 fielding
+Idaho,currently implemented,1,2026-02-15,PAP Table 1
+Illinois,not adopted,4,,
+Indiana,currently implemented,1,2026-01-01,PAP Table 1
+Iowa,previously implemented but vacated,2,2026-01-01,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins)
+Kansas,adopted not yet implemented or vacated,3,2027-02-15,PAP Table 1; future implementation
+Kentucky,not adopted,4,,
+Louisiana,currently implemented,1,2026-01-15,PAP Table 1
+Maine,not adopted,4,,
+Maryland,not adopted,4,,
+Massachusetts,not adopted,4,,
+Michigan,not adopted,4,,
+Minnesota,not adopted,4,,
+Mississippi,not adopted,4,,
+Missouri,adopted not yet implemented or vacated,3,2026-10-01,PAP Table 1; not yet effective as of July 2026 fielding
+Montana,not adopted,4,,
+Nebraska,previously implemented but vacated,2,2026-01-01,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins)
+Nevada,adopted not yet implemented or vacated,3,2028-02-01,PAP Table 1; future implementation
+New Hampshire,not adopted,4,,
+New Jersey,not adopted,4,,
+New Mexico,not adopted,4,,
+New York,not adopted,4,,
+North Carolina,not adopted,4,,
+North Dakota,adopted not yet implemented or vacated,3,2026-09-01,PAP Table 1; not yet effective as of July 2026 fielding
+Ohio,adopted not yet implemented or vacated,3,2026-10-01,PAP Table 1; not yet effective as of July 2026 fielding
+Oklahoma,currently implemented,1,2026-02-15,PAP Table 1
+Oregon,not adopted,4,,
+Pennsylvania,not adopted,4,,
+Rhode Island,not adopted,4,,
+South Carolina,adopted not yet implemented or vacated,3,2026-08-31,PAP Table 1; not yet effective as of July 2026 fielding
+South Dakota,not adopted,4,,
+Tennessee,adopted not yet implemented or vacated,3,2026-07-31,PAP Table 1 scheduled 7/31/2026; vacated 2026-06-22 before implementation (Aragon v. Rollins)
+Texas,currently implemented,1,2026-04-01,PAP Table 1
+Utah,currently implemented,1,2026-01-01,PAP Table 1
+Vermont,not adopted,4,,
+Virginia,currently implemented,1,2026-04-01,PAP Table 1
+Washington,not adopted,4,,
+Washington DC,not adopted,4,,
+West Virginia,previously implemented but vacated,2,2026-01-01,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins)
+Wisconsin,not adopted,4,,
+Wyoming,adopted not yet implemented or vacated,3,2027-02-01,PAP Table 1; future implementation

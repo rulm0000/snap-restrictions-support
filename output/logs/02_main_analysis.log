@@ -1,0 +1,506 @@
+-------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\culm\OneDrive - University of North Carolina at Chapel Hi
+> ll\OUHSC Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_suppo
+> rt\output\logs\02_main_analysis.log
+  log type:  text
+ opened on:   3 Aug 2026, 09:26:38
+
+. 
+. use "`out'\snap_w2_analysis.dta", clear
+
+. keep if analysis_ok
+(299 observations deleted)
+
+. count
+  8,715
+
+. display as text "Analysis N: " as result r(N)
+Analysis N: 8715
+
+. 
+. * Covariate block (restriction status as factor)
+. global covars "i.cv_age_bucket i.cv_gender i.cv_ethnicity i.cv_education i.cv
+> _income i.cv_user_census_region_name i.cv_has_children i.restriction_status_n
+> um"
+
+. 
+. *----------------------------------------------------------------------------
+> --*
+. * Multicollinearity check (linear terms; interactions omitted)
+. *----------------------------------------------------------------------------
+> --*
+. quietly regress support c.overconsume c.risk c.embarrass c.stigma     i.snap 
+> $covars
+
+. estat vif
+
+    Variable |       VIF       1/VIF  
+-------------+----------------------
+ overconsume |      1.06    0.942428
+        risk |      1.04    0.964873
+   embarrass |      1.26    0.793861
+      stigma |      1.15    0.866958
+      1.snap |      1.42    0.702565
+cv_age_buc~t |
+          2  |      8.85    0.112958
+          3  |     94.75    0.010554
+          4  |    164.45    0.006081
+          5  |    178.95    0.005588
+          6  |    209.60    0.004771
+          7  |    210.32    0.004755
+   cv_gender |
+          2  |      1.05    0.952112
+          3  |      1.02    0.980669
+cv_ethnicity |
+          2  |      4.28    0.233741
+          3  |      3.72    0.269144
+          4  |      1.46    0.683357
+          5  |      6.05    0.165217
+cv_education |
+          2  |      2.16    0.462075
+          3  |      1.79    0.557374
+          4  |      2.40    0.415940
+          5  |      1.37    0.730052
+          6  |      2.28    0.439427
+          7  |      1.22    0.822969
+          8  |      1.46    0.686154
+   cv_income |
+          2  |      2.60    0.384945
+          3  |      3.62    0.276564
+          4  |      3.09    0.323320
+          5  |      2.56    0.390426
+          6  |      2.17    0.460433
+          7  |      3.93    0.254163
+cv_user_ce~e |
+          2  |      1.83    0.546224
+          3  |      2.36    0.424336
+          4  |      1.77    0.563438
+2.cv_has_c~n |      1.24    0.804815
+restrictio~m |
+          2  |      1.20    0.836079
+          3  |      1.55    0.644155
+          4  |      2.16    0.462320
+-------------+----------------------
+    Mean VIF |     25.22
+
+. 
+. *----------------------------------------------------------------------------
+> --*
+. * Primary model: continuous predictors x SNAP; cluster by state
+. *----------------------------------------------------------------------------
+> --*
+. regress support c.overconsume##i.snap c.risk##i.snap     c.embarrass##i.snap 
+> c.stigma##i.snap $covars, vce(cluster state)
+
+Linear regression                               Number of obs     =      8,715
+                                                F(41, 50)         =     784.33
+                                                Prob > F          =     0.0000
+                                                R-squared         =     0.2151
+                                                Root MSE          =     1.2973
+
+                                 (Std. err. adjusted for 51 clusters in state)
+------------------------------------------------------------------------------
+             |               Robust
+     support | Coefficient  std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+ overconsume |  -.0554606   .0171764    -3.23   0.002    -.0899603   -.0209609
+             |
+        snap |
+       SNAP  |  -2.110191   .1305546   -16.16   0.000    -2.372418   -1.847965
+             |
+        snap#|
+          c. |
+ overconsume |
+       SNAP  |   .0546533   .0244133     2.24   0.030     .0056177    .1036888
+             |
+        risk |   .1775505   .0239241     7.42   0.000     .1294976    .2256035
+             |
+ snap#c.risk |
+       SNAP  |   .0773375   .0276332     2.80   0.007     .0218346    .1328405
+             |
+   embarrass |   -.109542   .0164096    -6.68   0.000    -.1425016   -.0765824
+             |
+        snap#|
+ c.embarrass |
+       SNAP  |   .1155152   .0284822     4.06   0.000     .0583071    .1727233
+             |
+      stigma |  -.4542589   .0320427   -14.18   0.000    -.5186186   -.3898992
+             |
+        snap#|
+    c.stigma |
+       SNAP  |   .3337959   .0250913    13.30   0.000     .2833985    .3841933
+             |
+cv_age_buc~t |
+      21-24  |  -.1449587   .8229785    -0.18   0.861     -1.79796    1.508042
+      25-34  |  -.3654003   .7123196    -0.51   0.610    -1.796136    1.065336
+      35-44  |  -.3138771   .7146874    -0.44   0.662    -1.749369    1.121615
+      45-54  |  -.2791284   .7179859    -0.39   0.699    -1.721245    1.162989
+      55-64  |  -.2290725   .7156524    -0.32   0.750    -1.666503    1.208358
+        65+  |  -.0616783   .7194379    -0.09   0.932    -1.506712    1.383355
+             |
+   cv_gender |
+       Male  |   .1446977   .0290815     4.98   0.000     .0862857    .2031097
+      Other  |   .1738803   .1494549     1.16   0.250    -.1263087    .4740693
+             |
+cv_ethnicity |
+Black or ..  |  -.5575963   .0823396    -6.77   0.000    -.7229802   -.3922125
+Hispanic/~o  |  -.0493084   .0904952    -0.54   0.588    -.2310734    .1324566
+      Other  |  -.3531954   .0830086    -4.25   0.000    -.5199231   -.1864677
+White/Cau~n  |  -.1258598    .064781    -1.94   0.058    -.2559764    .0042567
+             |
+cv_education |
+4 year Co..  |  -.0490708   .0597185    -0.82   0.415     -.169019    .0708773
+Graduate ..  |  -.1095901   .0702206    -1.56   0.125    -.2506323    .0314521
+High Scho..  |   -.038443   .0462615    -0.83   0.410     -.131362    .0544759
+Less than..  |   .0272888   .0866325     0.31   0.754    -.1467177    .2012952
+Some Coll..  |  -.0714772   .0400496    -1.78   0.080    -.1519191    .0089647
+Some Grad..  |   .0116362   .0687293     0.17   0.866    -.1264106     .149683
+Trade/Tec..  |  -.0339624   .0774927    -0.44   0.663     -.189611    .1216862
+             |
+   cv_income |
+    $125k +  |   .0377272   .0748606     0.50   0.616    -.1126347    .1880891
+   $20k-40k  |    -.16072   .0618323    -2.60   0.012    -.2849138   -.0365263
+   $40k-60k  |    -.12058   .0791156    -1.52   0.134    -.2794883    .0383283
+   $60k-80k  |  -.0006837   .0686303    -0.01   0.992    -.1385318    .1371643
+  $80k-100k  |    .009414   .0600864     0.16   0.876    -.1112731    .1301011
+     - $20k  |  -.2834873   .0763272    -3.71   0.001    -.4367949   -.1301797
+             |
+cv_user_ce~e |
+  Northeast  |   .0328581   .0567337     0.58   0.565     -.081095    .1468112
+      South  |  -.0372068   .0468436    -0.79   0.431    -.1312949    .0568812
+       West  |  -.0652282    .052238    -1.25   0.218    -.1701512    .0396948
+             |
+cv_has_chi~n |
+        Yes  |  -.0439828   .0339896    -1.29   0.202    -.1122529    .0242873
+             |
+restrictio~m |
+Previousl..  |  -.0899581   .0843658    -1.07   0.291    -.2594119    .0794956
+Adopted n..  |  -.3167796   .0631396    -5.02   0.000    -.4435993   -.1899599
+Not adopted  |  -.2395542   .0475094    -5.04   0.000    -.3349795   -.1441288
+             |
+       _cons |   5.285069   .7464412     7.08   0.000     3.785798     6.78434
+------------------------------------------------------------------------------
+
+. 
+. estimates store main
+
+. 
+. *----------------------------------------------------------------------------
+> --*
+. * Moderation screen: Wald tests of each predictor x SNAP block
+. *----------------------------------------------------------------------------
+> --*
+. testparm c.overconsume#i.snap
+
+ ( 1)  1.snap#c.overconsume = 0
+
+       F(  1,    50) =    5.01
+            Prob > F =    0.0297
+
+. testparm c.risk#i.snap
+
+ ( 1)  1.snap#c.risk = 0
+
+       F(  1,    50) =    7.83
+            Prob > F =    0.0073
+
+. testparm c.embarrass#i.snap
+
+ ( 1)  1.snap#c.embarrass = 0
+
+       F(  1,    50) =   16.45
+            Prob > F =    0.0002
+
+. testparm c.stigma#i.snap
+
+ ( 1)  1.snap#c.stigma = 0
+
+       F(  1,    50) =  176.98
+            Prob > F =    0.0000
+
+. 
+. *----------------------------------------------------------------------------
+> --*
+. * Simple effects: slope of each predictor within SNAP / Non-SNAP
+. *----------------------------------------------------------------------------
+> --*
+. margins snap, dydx(overconsume)
+
+Average marginal effects                                 Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  overconsume
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+overconsume  |
+        snap |
+   Non-SNAP  |  -.0554606   .0171764    -3.23   0.002    -.0899603   -.0209609
+       SNAP  |  -.0008073   .0193227    -0.04   0.967    -.0396182    .0380035
+------------------------------------------------------------------------------
+
+. margins snap, dydx(risk)
+
+Average marginal effects                                 Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  risk
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+risk         |
+        snap |
+   Non-SNAP  |   .1775505   .0239241     7.42   0.000     .1294976    .2256035
+       SNAP  |   .2548881   .0172633    14.76   0.000     .2202136    .2895625
+------------------------------------------------------------------------------
+
+. margins snap, dydx(embarrass)
+
+Average marginal effects                                 Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  embarrass
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+embarrass    |
+        snap |
+   Non-SNAP  |   -.109542   .0164096    -6.68   0.000    -.1425016   -.0765824
+       SNAP  |   .0059732   .0202865     0.29   0.770    -.0347735    .0467198
+------------------------------------------------------------------------------
+
+. margins snap, dydx(stigma)
+
+Average marginal effects                                 Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+dy/dx wrt:  stigma
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |      dy/dx   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+stigma       |
+        snap |
+   Non-SNAP  |  -.4542589   .0320427   -14.18   0.000    -.5186186   -.3898992
+       SNAP  |   -.120463      .0474    -2.54   0.014    -.2156687   -.0252573
+------------------------------------------------------------------------------
+
+. 
+. *----------------------------------------------------------------------------
+> --*
+. * Predicted marginal means by predictor level x SNAP + figures
+. *----------------------------------------------------------------------------
+> --*
+. 
+. * Overconsumption (1-4)
+. margins snap, at(overconsume=(1(1)4))
+
+Predictive margins                                       Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+1._at: overconsume = 1
+2._at: overconsume = 2
+3._at: overconsume = 3
+4._at: overconsume = 4
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    _at#snap |
+ 1#Non-SNAP  |   3.501413   .0291956   119.93   0.000     3.442772    3.560054
+     1#SNAP  |    2.90396   .0344959    84.18   0.000     2.834673    2.973247
+ 2#Non-SNAP  |   3.445952   .0280705   122.76   0.000     3.389571    3.502333
+     2#SNAP  |   2.903153   .0272729   106.45   0.000     2.848373    2.957932
+ 3#Non-SNAP  |   3.390491   .0362433    93.55   0.000     3.317695    3.463288
+     3#SNAP  |   2.902345    .032317    89.81   0.000     2.837435    2.967256
+ 4#Non-SNAP  |   3.335031   .0492875    67.66   0.000     3.236034    3.434028
+     4#SNAP  |   2.901538   .0457351    63.44   0.000     2.809676      2.9934
+------------------------------------------------------------------------------
+
+. marginsplot, xdimension(overconsume)     title("Adjusted mean support by soda
+>  overconsumption x SNAP")     ytitle("Predicted support (1-5)")     xtitle("S
+> elf-reported soda overconsumption (W1 Q14)")
+
+Variables that uniquely identify margins: overconsume snap
+
+. graph export "`out'\figures\fig_overconsume.png", replace width(1200)
+(file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHS
+> C Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outp
+> ut\figures\fig_overconsume.png not found)
+file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHSC
+>  Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outpu
+> t\figures\fig_overconsume.png written in PNG format
+
+. 
+. * Perceived risk (1-5)
+. margins snap, at(risk=(1(1)5))
+
+Predictive margins                                       Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+1._at: risk = 1
+2._at: risk = 2
+3._at: risk = 3
+4._at: risk = 4
+5._at: risk = 5
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    _at#snap |
+ 1#Non-SNAP  |   3.081605   .0576122    53.49   0.000     2.965887    3.197323
+     1#SNAP  |   2.378593   .0368849    64.49   0.000     2.304507    2.452678
+ 2#Non-SNAP  |   3.259156   .0384913    84.67   0.000     3.181844    3.336468
+     2#SNAP  |   2.633481    .027318    96.40   0.000     2.578611    2.688351
+ 3#Non-SNAP  |   3.436706    .028084   122.37   0.000     3.380298    3.493114
+     3#SNAP  |   2.888369   .0269832   107.04   0.000     2.834172    2.942566
+ 4#Non-SNAP  |   3.614257   .0352217   102.61   0.000     3.543512    3.685001
+     4#SNAP  |   3.143257    .036138    86.98   0.000     3.070672    3.215843
+ 5#Non-SNAP  |   3.791807   .0532649    71.19   0.000     3.684822    3.898793
+     5#SNAP  |   3.398145   .0497983    68.24   0.000     3.298123    3.498168
+------------------------------------------------------------------------------
+
+. marginsplot, xdimension(risk)     title("Adjusted mean support by perceived r
+> isk x SNAP")     ytitle("Predicted support (1-5)")     xtitle("Perceived heal
+> th risk of soda")
+
+Variables that uniquely identify margins: risk snap
+
+. graph export "`out'\figures\fig_risk.png", replace width(1200)
+(file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHS
+> C Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outp
+> ut\figures\fig_risk.png not found)
+file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHSC
+>  Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outpu
+> t\figures\fig_risk.png written in PNG format
+
+. 
+. * Embarrassment (1-5)
+. margins snap, at(embarrass=(1(1)5))
+
+Predictive margins                                       Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+1._at: embarrass = 1
+2._at: embarrass = 2
+3._at: embarrass = 3
+4._at: embarrass = 4
+5._at: embarrass = 5
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    _at#snap |
+ 1#Non-SNAP  |    3.61836   .0438438    82.53   0.000     3.530298    3.706423
+     1#SNAP  |   2.893825   .0353762    81.80   0.000      2.82277     2.96488
+ 2#Non-SNAP  |   3.508818   .0322865   108.68   0.000     3.443969    3.573668
+     2#SNAP  |   2.899798   .0263763   109.94   0.000      2.84682    2.952777
+ 3#Non-SNAP  |   3.399276   .0264784   128.38   0.000     3.346093     3.45246
+     3#SNAP  |   2.905771   .0310327    93.64   0.000      2.84344    2.968102
+ 4#Non-SNAP  |   3.289734   .0299724   109.76   0.000     3.229533    3.349936
+     4#SNAP  |   2.911744   .0453148    64.26   0.000     2.820727    3.002762
+ 5#Non-SNAP  |   3.180192   .0404244    78.67   0.000     3.098998    3.261387
+     5#SNAP  |   2.917718   .0629835    46.33   0.000     2.791211    3.044224
+------------------------------------------------------------------------------
+
+. marginsplot, xdimension(embarrass)     title("Adjusted mean support by embarr
+> assment x SNAP")     ytitle("Predicted support (1-5)")     xtitle("Felt/perce
+> ived judgment when paying with SNAP")
+
+Variables that uniquely identify margins: embarrass snap
+
+. graph export "`out'\figures\fig_embarrass.png", replace width(1200)
+(file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHS
+> C Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outp
+> ut\figures\fig_embarrass.png not found)
+file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHSC
+>  Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outpu
+> t\figures\fig_embarrass.png written in PNG format
+
+. 
+. * Stigma mean (plot at 1, 1.5, ..., 5)
+. margins snap, at(stigma=(1(0.5)5))
+
+Predictive margins                                       Number of obs = 8,715
+Model VCE: Robust
+
+Expression: Linear prediction, predict()
+1._at: stigma =   1
+2._at: stigma = 1.5
+3._at: stigma =   2
+4._at: stigma = 2.5
+5._at: stigma =   3
+6._at: stigma = 3.5
+7._at: stigma =   4
+8._at: stigma = 4.5
+9._at: stigma =   5
+
+------------------------------------------------------------------------------
+             |            Delta-method
+             |     Margin   std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+    _at#snap |
+ 1#Non-SNAP  |   4.252093   .0537099    79.17   0.000     4.144213    4.359972
+     1#SNAP  |   3.116663    .099795    31.23   0.000     2.916219    3.317108
+ 2#Non-SNAP  |   4.024963   .0404825    99.42   0.000     3.943652    4.106275
+     2#SNAP  |   3.056432   .0770091    39.69   0.000     2.901755    3.211109
+ 3#Non-SNAP  |   3.797834   .0301045   126.15   0.000     3.737367    3.858301
+     3#SNAP  |     2.9962   .0550012    54.48   0.000     2.885727    3.106674
+ 4#Non-SNAP  |   3.570705   .0262125   136.22   0.000     3.518055    3.623354
+     4#SNAP  |   2.935969   .0352598    83.27   0.000     2.865147     3.00679
+ 5#Non-SNAP  |   3.343575   .0313254   106.74   0.000     3.280656    3.406494
+     5#SNAP  |   2.875737   .0241817   118.92   0.000     2.827167    2.924308
+ 6#Non-SNAP  |   3.116446   .0422946    73.68   0.000     3.031494    3.201397
+     6#SNAP  |   2.815506    .032398    86.90   0.000     2.750433    2.880579
+ 7#Non-SNAP  |   2.889316   .0557652    51.81   0.000     2.777309    3.001324
+     7#SNAP  |   2.755274   .0513604    53.65   0.000     2.652114    2.858435
+ 8#Non-SNAP  |   2.662187   .0703139    37.86   0.000     2.520957    2.803416
+     8#SNAP  |   2.695043   .0731405    36.85   0.000     2.548136     2.84195
+ 9#Non-SNAP  |   2.435057   .0853915    28.52   0.000     2.263544    2.606571
+     9#SNAP  |   2.634811   .0958361    27.49   0.000     2.442319    2.827304
+------------------------------------------------------------------------------
+
+. marginsplot, xdimension(stigma)     title("Adjusted mean support by perceived
+>  stigma x SNAP")     ytitle("Predicted support (1-5)")     xtitle("Perceived 
+> stigma of current SNAP policies (Q7+Q8 mean)")
+
+Variables that uniquely identify margins: stigma snap
+
+. graph export "`out'\figures\fig_stigma.png", replace width(1200)
+(file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHS
+> C Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outp
+> ut\figures\fig_stigma.png not found)
+file C:\Users\culm\OneDrive - University of North Carolina at Chapel Hill\OUHSC
+>  Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_support\outpu
+> t\figures\fig_stigma.png written in PNG format
+
+. 
+. display as result "02_main_analysis.do finished."
+02_main_analysis.do finished.
+
+. log close
+      name:  <unnamed>
+       log:  C:\Users\culm\OneDrive - University of North Carolina at Chapel Hi
+> ll\OUHSC Backup 6.26.23\Employee Folder\Stanford Data Analyst\SNAP\SNAP_suppo
+> rt\output\logs\02_main_analysis.log
+  log type:  text
+ closed on:   3 Aug 2026, 09:26:56
+-------------------------------------------------------------------------------
