@@ -210,8 +210,8 @@ putexcel set "$tables/Table2_Main_Effects.xlsx", replace
 putexcel A1 = ("Table 2. Main-effects model predicting support for SNAP soft-drink/candy restrictions (N = `N')")
 putexcel A2 = ("Variable")
 putexcel B2 = ("b (95% CI)")
-putexcel C2 = ("p")
-putexcel D2 = ("Cohen's d")
+putexcel C2 = ("Cohen's d")
+putexcel D2 = ("p")
 
 local row = 3
 local prev ""
@@ -267,8 +267,8 @@ foreach nm of local names {
     fmt_b `d'
     local ds = r(out)
     putexcel B`row' = ("`bs' (`lls', `uls')")
-    putexcel C`row' = ("`ps'")
-    putexcel D`row' = ("`ds'")
+    putexcel C`row' = ("`ds'")
+    putexcel D`row' = ("`ps'")
     local row = `row' + 1
 }
 
@@ -290,11 +290,11 @@ putexcel B2 = ("Non-SNAP")
 putexcel E2 = ("SNAP")
 putexcel H2 = ("p for interaction")
 putexcel B3 = ("b (95% CI)")
-putexcel C3 = ("p")
-putexcel D3 = ("Cohen's d")
+putexcel C3 = ("Cohen's d")
+putexcel D3 = ("p")
 putexcel E3 = ("b (95% CI)")
-putexcel F3 = ("p")
-putexcel G3 = ("Cohen's d")
+putexcel F3 = ("Cohen's d")
+putexcel G3 = ("p")
 
 local preds "overconsume risk embarrass stigma"
 local row = 4
@@ -327,8 +327,8 @@ foreach pred of local preds {
     fmt_b `d0'
     local d0s = r(out)
     putexcel B`row' = ("`b0s' (`ll0s', `ul0s')")
-    putexcel C`row' = ("`p0s'")
-    putexcel D`row' = ("`d0s'")
+    putexcel C`row' = ("`d0s'")
+    putexcel D`row' = ("`p0s'")
 
     local b1 = M[1,2]
     local ll1 = M[5,2]
@@ -346,8 +346,8 @@ foreach pred of local preds {
     fmt_b `d1'
     local d1s = r(out)
     putexcel E`row' = ("`b1s' (`ll1s', `ul1s')")
-    putexcel F`row' = ("`p1s'")
-    putexcel G`row' = ("`d1s'")
+    putexcel F`row' = ("`d1s'")
+    putexcel G`row' = ("`p1s'")
 
     local row = `row' + 1
 }
