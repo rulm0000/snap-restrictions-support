@@ -1,5 +1,6 @@
 * 4_Tables.do
 * Table 1: descriptives by SNAP
+* Table 1a: percent support (somewhat + strongly) by SNAP
 * Table 2: main-effects model
 * Table 3: simple slopes by SNAP + interaction p-values
 
@@ -139,6 +140,61 @@ local note_row = `row' + 1
 putexcel A`note_row' = ("Note. Complete-case analysis sample. Continuous variables reported as mean (SD); categorical covariates as n (% within column). Unweighted. Percentages may not sum to 100 because of rounding.")
 
 display "Saved $tables/Table1_Descriptives.xlsx"
+
+*--------------------------------------------------------------------------
+* Table 1a: percent support by SNAP
+*--------------------------------------------------------------------------
+putexcel set "$tables/Table1a_Percent_Support.xlsx", replace
+putexcel A1 = ("Table 1a. Percent support for SNAP soft-drink/candy restrictions, by SNAP participation (N = `N')")
+putexcel A2 = ("Response")
+putexcel B2 = ("Overall (N = `N')")
+putexcel C2 = ("Non-SNAP (N = `N0')")
+putexcel D2 = ("SNAP (N = `N1')")
+
+local row = 3
+putexcel A`row' = ("Support for removing soft drinks and candy from SNAP-eligible purchases, n (%)")
+local row = `row' + 1
+
+quietly levelsof support, local(slevs)
+foreach lev of local slevs {
+    local levlab : label (support) `lev'
+    if "`levlab'" == "" local levlab "`lev'"
+    putexcel A`row' = ("   `levlab'")
+
+    quietly count if support == `lev'
+    fmt_npct `r(N)' `N'
+    putexcel B`row' = ("`r(out)'")
+
+    quietly count if support == `lev' & snap == 0
+    fmt_npct `r(N)' `N0'
+    putexcel C`row' = ("`r(out)'")
+
+    quietly count if support == `lev' & snap == 1
+    fmt_npct `r(N)' `N1'
+    putexcel D`row' = ("`r(out)'")
+
+    local row = `row' + 1
+}
+
+local row = `row' + 1
+putexcel A`row' = ("Somewhat or strongly support (sum), n (%)")
+
+quietly count if inlist(support, 4, 5)
+fmt_npct `r(N)' `N'
+putexcel B`row' = ("`r(out)'")
+
+quietly count if inlist(support, 4, 5) & snap == 0
+fmt_npct `r(N)' `N0'
+putexcel C`row' = ("`r(out)'")
+
+quietly count if inlist(support, 4, 5) & snap == 1
+fmt_npct `r(N)' `N1'
+putexcel D`row' = ("`r(out)'")
+
+local note_row = `row' + 2
+putexcel A`note_row' = ("Note. Complete-case analysis sample. Cells are n (% within column). The summary row combines Somewhat support and Strongly support. Unweighted. Percentages may not sum to 100 because of rounding.")
+
+display "Saved $tables/Table1a_Percent_Support.xlsx"
 
 *--------------------------------------------------------------------------
 * Table 2: main-effects model (no interactions)
