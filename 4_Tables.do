@@ -64,6 +64,10 @@ end
 
 quietly summarize support
 local sd_y = r(sd)
+foreach v in overconsume risk embarrass stigma snap {
+    quietly summarize `v'
+    local sd_`v' = r(sd)
+}
 
 *--------------------------------------------------------------------------
 * Table 1: descriptives by SNAP
@@ -273,7 +277,6 @@ foreach nm of local names {
     local p = T[4,`j']
     local ll = T[5,`j']
     local ul = T[6,`j']
-    local d = `b' / `sd_y'
 
     local pos = strpos("`nm'", ".")
     if `pos' > 0 {
@@ -297,12 +300,19 @@ foreach nm of local names {
             local row = `row' + 1
             continue
         }
+        * Fully standardized: b * SD(dummy) / SD(y)
+        quietly count if `v' == `levnum'
+        local plev = r(N) / `N'
+        local sd_x = sqrt(`plev' * (1 - `plev'))
+        local d = `b' * `sd_x' / `sd_y'
     }
     else {
         local vlab : variable label `nm'
         if "`vlab'" == "" local vlab "`nm'"
         putexcel A`row' = ("`vlab'")
         local prev ""
+        quietly summarize `nm'
+        local d = `b' * r(sd) / `sd_y'
     }
 
     fmt_b `b'
@@ -322,7 +332,7 @@ foreach nm of local names {
 }
 
 local note_row = `row' + 1
-putexcel A`note_row' = ("Note. OLS regression of support (1 = Strongly oppose to 5 = Strongly support) on all predictors and covariates, without predictor×SNAP interactions. Standard errors clustered by state (`nclust' clusters). R-squared = " + string(`r2', "%9.3f") + ". Cohen's d = b / SD(support), the change in support in outcome SD units associated with a 1-unit increase in a continuous predictor or with membership in a listed category versus the reference. Unweighted; complete-case analysis. Multicollinearity was assessed with variance inflation factors before fitting (see 2_Main_Analysis log): all four psychological predictors and SNAP participation had VIF < 1.5; larger VIFs reflect multi-category covariate dummy sets (e.g., age).")
+putexcel A`note_row' = ("Note. OLS regression of support (1 = Strongly oppose to 5 = Strongly support) on all predictors and covariates, without predictor×SNAP interactions. Standard errors clustered by state (`nclust' clusters). R-squared = " + string(`r2', "%9.3f") + ". Cohen's d is the fully standardized effect: b × SD(x) / SD(support), where SD(x) is the analysis-sample SD of the continuous predictor or of the 0/1 indicator for a listed category. Effects are comparable across predictors as change in support (in SD units) per 1 SD change in x. Unweighted; complete-case analysis. Multicollinearity was assessed with variance inflation factors before fitting (see 2_Main_Analysis log): all four psychological predictors and SNAP participation had VIF < 1.5; larger VIFs reflect multi-category covariate dummy sets (e.g., age).")
 
 display "Saved $tables/Table2_Main_Effects.xlsx"
 
@@ -360,11 +370,12 @@ foreach pred of local preds {
     quietly margins snap, dydx(`pred')
     matrix M = r(table)
 
+    * Common SD(predictor) so Non-SNAP vs SNAP d's differ only by slope
+    local d0 = M[1,1] * `sd_`pred'' / `sd_y'
     local b0 = M[1,1]
     local ll0 = M[5,1]
     local ul0 = M[6,1]
     local p0 = M[4,1]
-    local d0 = `b0' / `sd_y'
     fmt_b `b0'
     local b0s = r(out)
     fmt_b `ll0'
@@ -383,7 +394,7 @@ foreach pred of local preds {
     local ll1 = M[5,2]
     local ul1 = M[6,2]
     local p1 = M[4,2]
-    local d1 = `b1' / `sd_y'
+    local d1 = `b1' * `sd_`pred'' / `sd_y'
     fmt_b `b1'
     local b1s = r(out)
     fmt_b `ll1'
@@ -402,7 +413,7 @@ foreach pred of local preds {
 }
 
 local note_row = `row' + 1
-putexcel A`note_row' = ("Note. Coefficients are simple slopes (change in support per 1-unit increase in the predictor) from an OLS model with continuous predictors, SNAP participation, predictor×SNAP interactions, and covariates (age, gender, ethnicity, education, income, census region, children in household, state restriction status). Cohen's d = b / SD(support), the change in support in outcome SD units per 1-unit increase in the predictor. Standard errors clustered by state. Outcome: support for removing soft drinks and candy from SNAP-eligible purchases (1 = Strongly oppose to 5 = Strongly support). Unweighted. Complete-case analysis.")
+putexcel A`note_row' = ("Note. Coefficients are simple slopes (change in support per 1-unit increase in the predictor) from an OLS model with continuous predictors, SNAP participation, predictor×SNAP interactions, and covariates (age, gender, ethnicity, education, income, census region, children in household, state restriction status). Cohen's d is the fully standardized effect: b × SD(predictor) / SD(support), using the analysis-sample SD of each predictor (common across SNAP groups) so effects are comparable across predictors and between Non-SNAP and SNAP. Standard errors clustered by state. Outcome: support for removing soft drinks and candy from SNAP-eligible purchases (1 = Strongly oppose to 5 = Strongly support). Unweighted. Complete-case analysis.")
 
 display "Saved $tables/Table3_Predictors_by_SNAP.xlsx"
 
