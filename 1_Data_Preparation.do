@@ -145,6 +145,8 @@ label define cv_income ///
     7 "$125k +", replace
 label values cv_income cv_income
 
+* State restriction status from revised PAP Table 1 (July 2026 waivers; USDA 2026d + state sites)
+* Crosswalk also stores product-category indicators for documentation (not used in models)
 preserve
 import delimited using "$crosswalk", varnames(1) stringcols(_all) clear
 destring restriction_status_num, replace

@@ -1,52 +1,52 @@
-state_name,restriction_status,restriction_status_num,impl_date_pap,notes
-Alabama,not adopted,1,,
-Alaska,not adopted,1,,
-Arizona,not adopted,1,,
-Arkansas,currently implemented,4,2026-07-01,PAP Table 1; implemented 7/1/2026 during W2 fielding — coded as implemented as of late-July W2 export (07.29.26). Review if fielding-start coding preferred.
-California,not adopted,1,,
-Colorado,adopted not yet implemented or vacated,2,2026-03-01,PAP Table 1 scheduled 3/1/2026 but delayed; vacated 2026-06-22 (Aragon v. Rollins) before implementation.
-Connecticut,not adopted,1,,
-Delaware,not adopted,1,,
-Florida,currently implemented,4,2026-01-01,PAP Table 1
-Georgia,not adopted,1,,
-Hawaii,adopted not yet implemented or vacated,2,2026-08-01,PAP Table 1; not yet effective as of July 2026 fielding
-Idaho,currently implemented,4,2026-02-15,PAP Table 1
-Illinois,not adopted,1,,
-Indiana,currently implemented,4,2026-01-01,PAP Table 1
-Iowa,previously implemented but vacated,3,2026-01-01,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins)
-Kansas,adopted not yet implemented or vacated,2,2027-02-15,PAP Table 1; future implementation
-Kentucky,not adopted,1,,
-Louisiana,currently implemented,4,2026-01-15,PAP Table 1
-Maine,not adopted,1,,
-Maryland,not adopted,1,,
-Massachusetts,not adopted,1,,
-Michigan,not adopted,1,,
-Minnesota,not adopted,1,,
-Mississippi,not adopted,1,,
-Missouri,adopted not yet implemented or vacated,2,2026-10-01,PAP Table 1; not yet effective as of July 2026 fielding
-Montana,not adopted,1,,
-Nebraska,previously implemented but vacated,3,2026-01-01,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins)
-Nevada,adopted not yet implemented or vacated,2,2028-02-01,PAP Table 1; future implementation
-New Hampshire,not adopted,1,,
-New Jersey,not adopted,1,,
-New Mexico,not adopted,1,,
-New York,not adopted,1,,
-North Carolina,not adopted,1,,
-North Dakota,adopted not yet implemented or vacated,2,2026-09-01,PAP Table 1; not yet effective as of July 2026 fielding
-Ohio,adopted not yet implemented or vacated,2,2026-10-01,PAP Table 1; not yet effective as of July 2026 fielding
-Oklahoma,currently implemented,4,2026-02-15,PAP Table 1
-Oregon,not adopted,1,,
-Pennsylvania,not adopted,1,,
-Rhode Island,not adopted,1,,
-South Carolina,adopted not yet implemented or vacated,2,2026-08-31,PAP Table 1; not yet effective as of July 2026 fielding
-South Dakota,not adopted,1,,
-Tennessee,adopted not yet implemented or vacated,2,2026-07-31,PAP Table 1 scheduled 7/31/2026; vacated 2026-06-22 before implementation (Aragon v. Rollins)
-Texas,currently implemented,4,2026-04-01,PAP Table 1
-Utah,currently implemented,4,2026-01-01,PAP Table 1
-Vermont,not adopted,1,,
-Virginia,currently implemented,4,2026-04-01,PAP Table 1
-Washington,not adopted,1,,
-Washington DC,not adopted,1,,
-West Virginia,previously implemented but vacated,3,2026-01-01,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins)
-Wisconsin,not adopted,1,,
-Wyoming,adopted not yet implemented or vacated,2,2027-02-01,PAP Table 1; future implementation
+state_name,restriction_status,restriction_status_num,impl_date_pap,soda_regular,soda_diet,sports_drinks,energy_drinks,sweetened_tea,fruit_drinks,candy,prepared_dessert,sugar_threshold,notes
+Alabama,not adopted,1,,,,,,,,,,
+Alaska,not adopted,1,,,,,,,,,,
+Arizona,not adopted,1,,,,,,,,,,
+Arkansas,currently implemented,4,2026-07-01,1,1,0,1,1,1,1,0,,PAP Table 1 (July 2026); implemented 7/1/2026 during W2 fielding — coded currently implemented as of 7/29/2026 W2 export.
+California,not adopted,1,,,,,,,,,,
+Colorado,adopted not yet implemented or vacated,2,,1,1,1,1,1,1,0,0,,PAP Table 1; waiver vacated 2026-06-22 before implementation (Aragon v. Rollins).
+Connecticut,not adopted,1,,,,,,,,,,
+Delaware,not adopted,1,,,,,,,,,,
+Florida,currently implemented,4,2026-04-20,1,1,0,1,0,0,1,1,,PAP Table 1 (July 2026); also excludes prepared dessert.
+Georgia,not adopted,1,,,,,,,,,,
+Hawaii,adopted not yet implemented or vacated,2,2027-04-01,1,0,0,1,0,0,0,0,>10g sugar per serving,PAP Table 1 (July 2026); not yet effective as of July 2026 fielding.
+Idaho,currently implemented,4,2026-02-15,1,1,1,1,1,1,1,0,,PAP Table 1 (July 2026).
+Illinois,not adopted,1,,,,,,,,,,
+Indiana,currently implemented,4,2026-01-01,1,1,1,1,1,1,1,0,,PAP Table 1 (July 2026).
+Iowa,previously implemented but vacated,3,2026-01-01,1,1,1,1,1,1,1,0,,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins).
+Kansas,adopted not yet implemented or vacated,2,2027-02-15,1,1,1,1,1,1,1,0,,PAP Table 1 (July 2026); future implementation.
+Kentucky,not adopted,1,,,,,,,,,,
+Louisiana,currently implemented,4,2026-02-18,1,1,0,1,0,0,1,0,,PAP Table 1 (July 2026).
+Maine,not adopted,1,,,,,,,,,,
+Maryland,not adopted,1,,,,,,,,,,
+Massachusetts,not adopted,1,,,,,,,,,,
+Michigan,not adopted,1,,,,,,,,,,
+Minnesota,not adopted,1,,,,,,,,,,
+Mississippi,not adopted,1,,,,,,,,,,
+Missouri,adopted not yet implemented or vacated,2,2027-02-15,1,1,0,1,1,1,1,1,,PAP Table 1 (July 2026); also excludes prepared dessert; not yet effective as of July 2026 fielding.
+Montana,adopted not yet implemented or vacated,2,2026-09-30,1,0,1,1,1,1,1,1,>10g sugar per 8 ounces,PAP Table 1 (July 2026); also excludes prepared dessert; not yet effective as of July 2026 fielding.
+Nebraska,previously implemented but vacated,3,2026-01-01,1,1,0,1,0,0,0,0,,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins).
+Nevada,adopted not yet implemented or vacated,2,2028-02-01,1,0,0,0,0,1,1,0,,PAP Table 1 (July 2026); future implementation.
+New Hampshire,not adopted,1,,,,,,,,,,
+New Jersey,not adopted,1,,,,,,,,,,
+New Mexico,not adopted,1,,,,,,,,,,
+New York,not adopted,1,,,,,,,,,,
+North Carolina,not adopted,1,,,,,,,,,,
+North Dakota,adopted not yet implemented or vacated,2,2026-09-01,1,1,0,1,0,0,1,0,,PAP Table 1 (July 2026); not yet effective as of July 2026 fielding.
+Ohio,adopted not yet implemented or vacated,2,2026-10-01,1,0,0,1,0,0,0,0,,PAP Table 1 (July 2026); not yet effective as of July 2026 fielding.
+Oklahoma,currently implemented,4,2026-02-15,1,1,1,1,1,1,1,0,,PAP Table 1 (July 2026).
+Oregon,not adopted,1,,,,,,,,,,
+Pennsylvania,not adopted,1,,,,,,,,,,
+Rhode Island,not adopted,1,,,,,,,,,,
+South Carolina,adopted not yet implemented or vacated,2,2026-08-31,1,1,0,1,1,1,1,0,,PAP Table 1 (July 2026); not yet effective as of July 2026 fielding.
+South Dakota,not adopted,1,,,,,,,,,,
+Tennessee,adopted not yet implemented or vacated,2,,1,0,0,0,0,0,1,0,,PAP Table 1; waiver vacated 2026-06-22 before implementation (Aragon v. Rollins).
+Texas,currently implemented,4,2026-04-01,1,1,1,1,1,1,1,0,>5g sugar,PAP Table 1 (July 2026); restricts only if >5g sugar.
+Utah,currently implemented,4,2026-01-01,1,1,0,0,0,0,0,0,,PAP Table 1 (July 2026).
+Vermont,not adopted,1,,,,,,,,,,
+Virginia,adopted not yet implemented or vacated,2,2026-10-01,1,1,0,1,0,0,0,0,,PAP Table 1 (July 2026); not yet effective as of July 2026 fielding.
+Washington,not adopted,1,,,,,,,,,,
+Washington DC,not adopted,1,,,,,,,,,,
+West Virginia,previously implemented but vacated,3,2026-01-01,1,1,0,1,0,0,0,0,,PAP Table 1; implemented 1/1/2026; vacated 2026-06-22 (Aragon v. Rollins).
+Wisconsin,not adopted,1,,,,,,,,,,
+Wyoming,adopted not yet implemented or vacated,2,2027-02-01,1,1,0,1,0,0,0,0,,PAP Table 1 (July 2026); sweetened drinks from 2/2027; candy planned 2/2028.
