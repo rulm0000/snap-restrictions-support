@@ -61,6 +61,9 @@ program define fmt_npct, rclass
     return local out = string(`n') + " (" + trim(string(`pct', "%9.1f")) + ")"
 end
 
+quietly summarize support
+local sd_y = r(sd)
+
 *--------------------------------------------------------------------------
 * Table 1: descriptives by SNAP
 *--------------------------------------------------------------------------
@@ -152,6 +155,7 @@ putexcel A1 = ("Table 2. Main-effects model predicting support for SNAP soft-dri
 putexcel A2 = ("Variable")
 putexcel B2 = ("b (95% CI)")
 putexcel C2 = ("p")
+putexcel D2 = ("Cohen's d")
 
 local row = 3
 local prev ""
@@ -164,6 +168,7 @@ foreach nm of local names {
     local p = T[4,`j']
     local ll = T[5,`j']
     local ul = T[6,`j']
+    local d = `b' / `sd_y'
 
     local pos = strpos("`nm'", ".")
     if `pos' > 0 {
@@ -203,13 +208,16 @@ foreach nm of local names {
     local uls = r(out)
     fmt_p `p'
     local ps = r(out)
+    fmt_b `d'
+    local ds = r(out)
     putexcel B`row' = ("`bs' (`lls', `uls')")
     putexcel C`row' = ("`ps'")
+    putexcel D`row' = ("`ds'")
     local row = `row' + 1
 }
 
 local note_row = `row' + 1
-putexcel A`note_row' = ("Note. OLS regression of support (1 = Strongly oppose to 5 = Strongly support) on all predictors and covariates, without predictor×SNAP interactions. Standard errors clustered by state (`nclust' clusters). R-squared = " + string(`r2', "%9.3f") + ". Unweighted; complete-case analysis. Multicollinearity was assessed with variance inflation factors before fitting (see 2_Main_Analysis log): all four psychological predictors and SNAP participation had VIF < 1.5; larger VIFs reflect multi-category covariate dummy sets (e.g., age).")
+putexcel A`note_row' = ("Note. OLS regression of support (1 = Strongly oppose to 5 = Strongly support) on all predictors and covariates, without predictor×SNAP interactions. Standard errors clustered by state (`nclust' clusters). R-squared = " + string(`r2', "%9.3f") + ". Cohen's d = b / SD(support), the change in support in outcome SD units associated with a 1-unit increase in a continuous predictor or with membership in a listed category versus the reference. Unweighted; complete-case analysis. Multicollinearity was assessed with variance inflation factors before fitting (see 2_Main_Analysis log): all four psychological predictors and SNAP participation had VIF < 1.5; larger VIFs reflect multi-category covariate dummy sets (e.g., age).")
 
 display "Saved $tables/Table2_Main_Effects.xlsx"
 
@@ -223,12 +231,14 @@ putexcel set "$tables/Table3_Predictors_by_SNAP.xlsx", replace
 putexcel A1 = ("Table 3. Associations of psychological predictors with support for SNAP soft-drink/candy restrictions, by SNAP participation (N = `N')")
 putexcel A2 = ("Predictor")
 putexcel B2 = ("Non-SNAP")
-putexcel D2 = ("SNAP")
-putexcel F2 = ("p for interaction")
+putexcel E2 = ("SNAP")
+putexcel H2 = ("p for interaction")
 putexcel B3 = ("b (95% CI)")
 putexcel C3 = ("p")
-putexcel D3 = ("b (95% CI)")
-putexcel E3 = ("p")
+putexcel D3 = ("Cohen's d")
+putexcel E3 = ("b (95% CI)")
+putexcel F3 = ("p")
+putexcel G3 = ("Cohen's d")
 
 local preds "overconsume risk embarrass stigma"
 local row = 4
@@ -240,7 +250,7 @@ foreach pred of local preds {
 
     quietly testparm c.`pred'#i.snap
     fmt_p `r(p)'
-    putexcel F`row' = ("`r(out)'")
+    putexcel H`row' = ("`r(out)'")
 
     quietly margins snap, dydx(`pred')
     matrix M = r(table)
@@ -249,6 +259,7 @@ foreach pred of local preds {
     local ll0 = M[5,1]
     local ul0 = M[6,1]
     local p0 = M[4,1]
+    local d0 = `b0' / `sd_y'
     fmt_b `b0'
     local b0s = r(out)
     fmt_b `ll0'
@@ -257,13 +268,17 @@ foreach pred of local preds {
     local ul0s = r(out)
     fmt_p `p0'
     local p0s = r(out)
+    fmt_b `d0'
+    local d0s = r(out)
     putexcel B`row' = ("`b0s' (`ll0s', `ul0s')")
     putexcel C`row' = ("`p0s'")
+    putexcel D`row' = ("`d0s'")
 
     local b1 = M[1,2]
     local ll1 = M[5,2]
     local ul1 = M[6,2]
     local p1 = M[4,2]
+    local d1 = `b1' / `sd_y'
     fmt_b `b1'
     local b1s = r(out)
     fmt_b `ll1'
@@ -272,14 +287,17 @@ foreach pred of local preds {
     local ul1s = r(out)
     fmt_p `p1'
     local p1s = r(out)
-    putexcel D`row' = ("`b1s' (`ll1s', `ul1s')")
-    putexcel E`row' = ("`p1s'")
+    fmt_b `d1'
+    local d1s = r(out)
+    putexcel E`row' = ("`b1s' (`ll1s', `ul1s')")
+    putexcel F`row' = ("`p1s'")
+    putexcel G`row' = ("`d1s'")
 
     local row = `row' + 1
 }
 
 local note_row = `row' + 1
-putexcel A`note_row' = ("Note. Coefficients are simple slopes (change in support per 1-unit increase in the predictor) from an OLS model with continuous predictors, SNAP participation, predictor×SNAP interactions, and covariates (age, gender, ethnicity, education, income, census region, children in household, state restriction status). Standard errors clustered by state. Outcome: support for removing soft drinks and candy from SNAP-eligible purchases (1 = Strongly oppose to 5 = Strongly support). Unweighted. Complete-case analysis.")
+putexcel A`note_row' = ("Note. Coefficients are simple slopes (change in support per 1-unit increase in the predictor) from an OLS model with continuous predictors, SNAP participation, predictor×SNAP interactions, and covariates (age, gender, ethnicity, education, income, census region, children in household, state restriction status). Cohen's d = b / SD(support), the change in support in outcome SD units per 1-unit increase in the predictor. Standard errors clustered by state. Outcome: support for removing soft drinks and candy from SNAP-eligible purchases (1 = Strongly oppose to 5 = Strongly support). Unweighted. Complete-case analysis.")
 
 display "Saved $tables/Table3_Predictors_by_SNAP.xlsx"
 
