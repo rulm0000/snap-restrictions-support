@@ -16,7 +16,7 @@ Determine whether psychological predictors (self-reported soda overconsumption, 
 - `3_Figures.py`
   - Draws the four-panel figures of support across predictor levels by SNAP participation, both model-adjusted and descriptive.
 - `4_Tables.do`
-  - Writes Table 1 (sample characteristics by SNAP), Table 1a (percent support by SNAP), Table 2 (main-effects model), and Table 3 (simple slopes by SNAP).
+  - Writes Table 1 (sample characteristics by SNAP), Table 1a (percent somewhat/strongly supporting by covariate level and SNAP), Table 2 (main-effects model), and Table 3 (simple slopes by SNAP).
 
 ### Repository layout
 

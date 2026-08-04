@@ -142,57 +142,107 @@ putexcel A`note_row' = ("Note. Complete-case analysis sample. Continuous variabl
 display "Saved $tables/Table1_Descriptives.xlsx"
 
 *--------------------------------------------------------------------------
-* Table 1a: percent support by SNAP
+* Table 1a: % somewhat/strongly supporting, by covariate level and SNAP
 *--------------------------------------------------------------------------
+capture program drop put_pct_support
+program define put_pct_support
+    args row var lev
+    quietly count if `var' == `lev'
+    local n_all = r(N)
+    quietly count if `var' == `lev' & inlist(support, 4, 5)
+    if `n_all' > 0 {
+        fmt_npct `r(N)' `n_all'
+        putexcel B`row' = ("`r(out)'")
+    }
+    else {
+        putexcel B`row' = ("—")
+    }
+
+    quietly count if `var' == `lev' & snap == 0
+    local n0 = r(N)
+    quietly count if `var' == `lev' & snap == 0 & inlist(support, 4, 5)
+    if `n0' > 0 {
+        fmt_npct `r(N)' `n0'
+        putexcel C`row' = ("`r(out)'")
+    }
+    else {
+        putexcel C`row' = ("—")
+    }
+
+    quietly count if `var' == `lev' & snap == 1
+    local n1 = r(N)
+    quietly count if `var' == `lev' & snap == 1 & inlist(support, 4, 5)
+    if `n1' > 0 {
+        fmt_npct `r(N)' `n1'
+        putexcel D`row' = ("`r(out)'")
+    }
+    else {
+        putexcel D`row' = ("—")
+    }
+end
+
 putexcel set "$tables/Table1a_Percent_Support.xlsx", replace
-putexcel A1 = ("Table 1a. Percent support for SNAP soft-drink/candy restrictions, by SNAP participation (N = `N')")
-putexcel A2 = ("Response")
-putexcel B2 = ("Overall (N = `N')")
-putexcel C2 = ("Non-SNAP (N = `N0')")
-putexcel D2 = ("SNAP (N = `N1')")
+putexcel A1 = ("Table 1a. Percent somewhat or strongly supporting SNAP soft-drink/candy restrictions, by subgroup and SNAP participation (N = `N')")
+putexcel A2 = ("Variable")
+putexcel B2 = ("Overall")
+putexcel C2 = ("Non-SNAP")
+putexcel D2 = ("SNAP")
 
 local row = 3
-putexcel A`row' = ("Support for removing soft drinks and candy from SNAP-eligible purchases, n (%)")
-local row = `row' + 1
-
-quietly levelsof support, local(slevs)
-foreach lev of local slevs {
-    local levlab : label (support) `lev'
-    if "`levlab'" == "" local levlab "`lev'"
-    putexcel A`row' = ("   `levlab'")
-
-    quietly count if support == `lev'
-    fmt_npct `r(N)' `N'
-    putexcel B`row' = ("`r(out)'")
-
-    quietly count if support == `lev' & snap == 0
-    fmt_npct `r(N)' `N0'
-    putexcel C`row' = ("`r(out)'")
-
-    quietly count if support == `lev' & snap == 1
-    fmt_npct `r(N)' `N1'
-    putexcel D`row' = ("`r(out)'")
-
-    local row = `row' + 1
-}
-
-local row = `row' + 1
-putexcel A`row' = ("Somewhat or strongly support (sum), n (%)")
-
+putexcel A`row' = ("Total sample")
 quietly count if inlist(support, 4, 5)
 fmt_npct `r(N)' `N'
 putexcel B`row' = ("`r(out)'")
-
 quietly count if inlist(support, 4, 5) & snap == 0
 fmt_npct `r(N)' `N0'
 putexcel C`row' = ("`r(out)'")
-
 quietly count if inlist(support, 4, 5) & snap == 1
 fmt_npct `r(N)' `N1'
 putexcel D`row' = ("`r(out)'")
+local row = `row' + 2
 
-local note_row = `row' + 2
-putexcel A`note_row' = ("Note. Complete-case analysis sample. Cells are n (% within column). The summary row combines Somewhat support and Strongly support. Unweighted. Percentages may not sum to 100 because of rounding.")
+putexcel A`row' = ("Psychological predictors")
+local row = `row' + 1
+
+foreach v in overconsume risk embarrass stigma {
+    local vlab : variable label `v'
+    if "`vlab'" == "" local vlab "`v'"
+    putexcel A`row' = ("`vlab'")
+    local row = `row' + 1
+
+    quietly levelsof `v', local(levs)
+    foreach lev of local levs {
+        capture local levlab : label (`v') `lev'
+        if _rc != 0 | "`levlab'" == "" local levlab "`lev'"
+        putexcel A`row' = ("   `levlab'")
+        put_pct_support `row' `v' `lev'
+        local row = `row' + 1
+    }
+}
+
+local row = `row' + 1
+putexcel A`row' = ("Covariates")
+local row = `row' + 1
+
+local cats "cv_age_bucket cv_gender cv_ethnicity cv_education cv_income cv_user_census_region_name cv_has_children restriction_status_num"
+foreach v of local cats {
+    local vlab : variable label `v'
+    if "`vlab'" == "" local vlab "`v'"
+    putexcel A`row' = ("`vlab'")
+    local row = `row' + 1
+
+    quietly levelsof `v', local(levs)
+    foreach lev of local levs {
+        local levlab : label (`v') `lev'
+        if "`levlab'" == "" local levlab "`lev'"
+        putexcel A`row' = ("   `levlab'")
+        put_pct_support `row' `v' `lev'
+        local row = `row' + 1
+    }
+}
+
+local note_row = `row' + 1
+putexcel A`note_row' = ("Note. Complete-case analysis sample. Each cell is n (%): number and percent of respondents in that row subgroup (and SNAP column) who somewhat or strongly support removing soft drinks and candy from SNAP-eligible purchases. Denominators are the subgroup totals (not the full sample). Unweighted.")
 
 display "Saved $tables/Table1a_Percent_Support.xlsx"
 
