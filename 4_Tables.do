@@ -144,60 +144,59 @@ display "Saved $tables/Table1_Descriptives.xlsx"
 *--------------------------------------------------------------------------
 * Table 1a: % somewhat/strongly supporting, by covariate level and SNAP
 *--------------------------------------------------------------------------
+* Percent supporting (somewhat/strongly) with SE of the percentage: 100*sqrt(p*(1-p)/n)
+capture program drop fmt_pct_se
+program define fmt_pct_se, rclass
+    args k n
+    if `n' <= 0 {
+        return local out "—"
+        exit
+    }
+    local p = `k' / `n'
+    local pct = 100 * `p'
+    local se = 100 * sqrt(`p' * (1 - `p') / `n')
+    return local out = trim(string(`pct', "%9.1f")) + " (" + trim(string(`se', "%9.1f")) + ")"
+end
+
 capture program drop put_pct_support
 program define put_pct_support
     args row var lev
     quietly count if `var' == `lev'
     local n_all = r(N)
     quietly count if `var' == `lev' & inlist(support, 4, 5)
-    if `n_all' > 0 {
-        fmt_npct `r(N)' `n_all'
-        putexcel B`row' = ("`r(out)'")
-    }
-    else {
-        putexcel B`row' = ("—")
-    }
+    fmt_pct_se `r(N)' `n_all'
+    putexcel B`row' = ("`r(out)'")
 
     quietly count if `var' == `lev' & snap == 0
     local n0 = r(N)
     quietly count if `var' == `lev' & snap == 0 & inlist(support, 4, 5)
-    if `n0' > 0 {
-        fmt_npct `r(N)' `n0'
-        putexcel C`row' = ("`r(out)'")
-    }
-    else {
-        putexcel C`row' = ("—")
-    }
+    fmt_pct_se `r(N)' `n0'
+    putexcel C`row' = ("`r(out)'")
 
     quietly count if `var' == `lev' & snap == 1
     local n1 = r(N)
     quietly count if `var' == `lev' & snap == 1 & inlist(support, 4, 5)
-    if `n1' > 0 {
-        fmt_npct `r(N)' `n1'
-        putexcel D`row' = ("`r(out)'")
-    }
-    else {
-        putexcel D`row' = ("—")
-    }
+    fmt_pct_se `r(N)' `n1'
+    putexcel D`row' = ("`r(out)'")
 end
 
 putexcel set "$tables/Table1a_Percent_Support.xlsx", replace
 putexcel A1 = ("Table 1a. Percent somewhat or strongly supporting SNAP soft-drink/candy restrictions, by subgroup and SNAP participation (N = `N')")
 putexcel A2 = ("Variable")
-putexcel B2 = ("Overall")
-putexcel C2 = ("Non-SNAP")
-putexcel D2 = ("SNAP")
+putexcel B2 = ("Overall, % (SE)")
+putexcel C2 = ("Non-SNAP, % (SE)")
+putexcel D2 = ("SNAP, % (SE)")
 
 local row = 3
 putexcel A`row' = ("Total sample")
 quietly count if inlist(support, 4, 5)
-fmt_npct `r(N)' `N'
+fmt_pct_se `r(N)' `N'
 putexcel B`row' = ("`r(out)'")
 quietly count if inlist(support, 4, 5) & snap == 0
-fmt_npct `r(N)' `N0'
+fmt_pct_se `r(N)' `N0'
 putexcel C`row' = ("`r(out)'")
 quietly count if inlist(support, 4, 5) & snap == 1
-fmt_npct `r(N)' `N1'
+fmt_pct_se `r(N)' `N1'
 putexcel D`row' = ("`r(out)'")
 local row = `row' + 2
 
@@ -242,7 +241,7 @@ foreach v of local cats {
 }
 
 local note_row = `row' + 1
-putexcel A`note_row' = ("Note. Complete-case analysis sample. Each cell is n (%): number and percent of respondents in that row subgroup (and SNAP column) who somewhat or strongly support removing soft drinks and candy from SNAP-eligible purchases. Denominators are the subgroup totals (not the full sample). Unweighted.")
+putexcel A`note_row' = ("Note. Complete-case analysis sample. Each cell is the percent of respondents in that row subgroup (and SNAP column) who somewhat or strongly support removing soft drinks and candy from SNAP-eligible purchases, with the standard error of that percentage in parentheses: SE = 100 × sqrt[p(1−p)/n]. Unweighted.")
 
 display "Saved $tables/Table1a_Percent_Support.xlsx"
 
