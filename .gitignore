@@ -1,17 +1,21 @@
-# Analysis microdata / intermediates — do not commit
+# Restricted-access data must never be committed - see the Data availability
+# section of the README. The Numerator purchase-panel data are proprietary and
+# the survey data are not yet cleared for public release.
+
 *.dta
-output/derived/
-output/logs/
+*.xlsx
+*.csv
+!Project folders-files/Data/state_restriction_status.csv
 
-# Zoom variants (local only)
-output/figures/*_zoom.*
-
-# OS / editor
-.DS_Store
-Thumbs.db
-*.swp
-~$*
-
-# Stata scratch
-*.smcl
+# Analysis outputs are reproduced by running the code
+Project folders-files/Results/Tables/
+Project folders-files/Results/Figures/
+Project folders-files/Results/Logs/
 *.log
+*.smcl
+
+# Editor and OS artifacts
+.Rhistory
+.DS_Store
+__MACOSX/
+__pycache__/

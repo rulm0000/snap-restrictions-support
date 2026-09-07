@@ -1,14 +1,7 @@
-* 1_Data_Preparation.do
-* Import W2, merge W1 Q14 (Q14 empty in W2), recode analysis vars
+*1_Data prep
 
 clear all
 set more off
-
-capture confirm global data
-if _rc != 0 {
-    global project_root "."
-    do "setup.do"
-}
 
 capture log close _all
 log using "$logs/1_Data_Preparation.log", replace text
@@ -54,12 +47,12 @@ label variable support "Support for SNAP restrictions (1-5)"
 gen snap = .
 replace snap = 1 if Q4 == "Yes"
 replace snap = 0 if Q4 == "No"
-label define snaplbl 0 "Non-SNAP" 1 "SNAP", replace
+label define snaplbl 0 "Non-recipients" 1 "SNAP recipients", replace
 label values snap snaplbl
-label variable snap "SNAP participation past 3 months (W2 Q4)"
+label variable snap "SNAP participation"
 tab Q4 snap, missing
 
-* Predictors (continuous; prereg v10)
+* Psychological factors (continuous; prereg v10)
 gen risk = .
 replace risk = 1 if Q3 == "Not at all"
 replace risk = 2 if Q3 == "Very little"
@@ -76,7 +69,7 @@ foreach q in Q5 Q6 {
     replace embarrass = 4 if `q' == "Often"
     replace embarrass = 5 if `q' == "Most or all of the time"
 }
-label variable embarrass "Embarrassment when paying with SNAP"
+label variable embarrass "Felt judged when paying with SNAP"
 
 gen q7_num = .
 replace q7_num = 1 if Q7 == "Strongly disagree"
@@ -93,7 +86,8 @@ replace q8_num = 4 if Q8 == "Somewhat agree"
 replace q8_num = 5 if Q8 == "Strongly agree"
 
 egen stigma = rowmean(q7_num q8_num)
-label variable stigma "Perceived stigma of SNAP policies"
+* Composite of Q7 (disrespect/stigma) and Q8 (loss of autonomy); displayed as paternalism
+label variable stigma "Perceived paternalism of SNAP policies"
 alpha q7_num q8_num
 spearman q7_num q8_num, stats(rho p obs)
 
@@ -110,33 +104,42 @@ foreach v in age_bucket gender ethnicity education income ///
 }
 encode user_state_name, gen(state)
 
-* Ethnicity: White = 1 (reference); remaining groups follow
+* Race/ethnicity: White = 1 (regression reference); remaining groups follow
 recode cv_ethnicity (5=1) (1=2) (2=3) (3=4) (4=5)
 label define cv_ethnicity ///
-    1 "White/Caucasian" ///
+    1 "White or Caucasian" ///
     2 "Asian" ///
     3 "Black or African American" ///
-    4 "Hispanic/Latino" ///
+    4 "Hispanic or Latino" ///
     5 "Other", replace
 label values cv_ethnicity cv_ethnicity
+
+* Display labels for tables (encode keeps raw stub names otherwise)
+label variable cv_age_bucket "Age group, years"
+label variable cv_gender "Gender"
+label variable cv_ethnicity "Race/ethnicity"
+label variable cv_education "Education level"
+label variable cv_income "Income group"
+label variable cv_user_census_region_name "US Census Region"
+label variable cv_has_children "Has children"
 
 * Education: lowest → highest; Less than high school = 1 (reference)
 recode cv_education (5=1) (4=2) (8=3) (6=4) (1=5) (2=6) (7=7) (3=8)
 label define cv_education ///
     1 "Less than high school" ///
-    2 "High School/GED" ///
-    3 "Trade/Technical Degree" ///
-    4 "Some College or university" ///
-    5 "2 year College Degree" ///
-    6 "4 year College Degree" ///
-    7 "Some Graduate School" ///
-    8 "Graduate Degree", replace
+    2 "High school diploma or GED" ///
+    3 "Trade or technical degree" ///
+    4 "Some college or university" ///
+    5 "2 year college degree" ///
+    6 "4 year college degree" ///
+    7 "Some graduate school" ///
+    8 "Graduate degree", replace
 label values cv_education cv_education
 
-* Income: ascending; lowest (- $20k) = 1 (reference)
+* Income: ascending; lowest (<$20k) = 1 (reference)
 recode cv_income (7=1) (3=2) (4=3) (5=4) (6=5) (1=6) (2=7)
 label define cv_income ///
-    1 "- $20k" ///
+    1 "<$20k" ///
     2 "$20k-40k" ///
     3 "$40k-60k" ///
     4 "$60k-80k" ///
@@ -172,7 +175,45 @@ tab restriction_status_num, missing
 assert !missing(restriction_status_num)
 assert inlist(restriction_status_num, 1, 2, 3, 4)
 
-gen analysis_ok = !missing(support, snap, risk, embarrass, stigma, overconsume, ///
+**#Survey weights (entropy balancing; Ron via Anna, 2026-09-05)
+preserve
+import delimited using "$weights_nonsnap", varnames(1) stringcols(1) clear
+gen byte wt_stratum = 0
+tempfile w_ns
+save `w_ns'
+import delimited using "$weights_snap", varnames(1) stringcols(1) clear
+gen byte wt_stratum = 1
+append using `w_ns'
+drop if user_id == "0"
+duplicates drop user_id, force
+rename webal wt
+label variable wt "Entropy-balancing survey weight"
+label variable wt_stratum "Weight file stratum (0=non-SNAP purchase, 1=SNAP purchase)"
+tempfile weights
+save `weights'
+restore
+
+merge m:1 user_id using `weights', keep(master match) nogen
+count if missing(wt)
+display "Wave 2 rows with NO weight: " r(N)
+
+* Winsorize at [1/3, 3] to match the parent paper's protocol
+* (Allcott/Finkelstein/Grummon/Notowidigdo, Appendix E.1: "For downstream
+* analyses, we winsorize weights at [1/3, 3]"). The delivered files are NOT
+* winsorized: nothing falls below 1/3, but some weights exceed 3.
+gen double wt_raw = wt
+count if wt > 3 & !missing(wt)
+display "Weights above 3 (winsorized down): " r(N)
+count if wt < 1/3 & !missing(wt)
+display "Weights below 1/3 (winsorized up): " r(N)
+replace wt = min(max(wt, 1/3), 3)
+label variable wt "Entropy-balancing survey weight (winsorized [1/3, 3])"
+label variable wt_raw "Entropy-balancing survey weight (as delivered)"
+summarize wt wt_raw
+summarize wt, detail
+tab wt_stratum snap, missing
+
+gen analysis_ok = !missing(wt) & !missing(support, snap, risk, embarrass, stigma, overconsume, ///
     cv_age_bucket, cv_gender, cv_ethnicity, cv_education, cv_income, ///
     cv_user_census_region_name, cv_has_children, restriction_status_num, state)
 
@@ -182,6 +223,6 @@ count if analysis_ok
 display "Complete-case analysis N: " r(N)
 tab support snap if analysis_ok, missing
 
-save "$data/snap_w2_analysis.dta", replace
-display "Saved $data/snap_w2_analysis.dta"
+save "$Data/snap_w2_analysis.dta", replace
+display "Saved $Data/snap_w2_analysis.dta"
 log close
