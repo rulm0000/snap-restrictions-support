@@ -33,7 +33,10 @@ program define fmt_npct_w, rclass
 end
 
 * Factor bases (level 1): White; Less than HS; lowest income; Not adopted
-global covars "i.cv_age_bucket i.cv_gender ib1.cv_ethnicity ib1.cv_education ib1.cv_income i.cv_user_census_region_name i.cv_has_children ib1.restriction_status_num"
+* Age uses the last level (65+) as the base rather than level 1 (18-20, n=8);
+* the model is identical either way, but contrasts against an 8-person cell
+* have uninformative CIs
+global covars "ib(last).cv_age_bucket i.cv_gender ib1.cv_ethnicity ib1.cv_education ib1.cv_income i.cv_user_census_region_name i.cv_has_children ib1.restriction_status_num"
 
 capture program drop fmt_b
 program define fmt_b, rclass
